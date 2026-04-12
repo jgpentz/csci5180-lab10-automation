@@ -12,7 +12,19 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=7.0.0",
+    "ruff>=0.8.0",
 ]
 
 [tool.uv]
 package = false
+
+[tool.ruff]
+target-version = "py310"
+exclude = [".venv", "artifacts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/render.py" = ["E402"]
+"tests/test_render.py" = ["E402"]

@@ -67,6 +67,8 @@ class DeviceInterface(BaseModel):
 
 
 class Device(BaseModel):
+    """Per-node topology entry (gateway = L3 router, routed mgmt)."""
+
     model_config = ConfigDict(extra="forbid")
 
     role: Literal["leaf", "spine", "gateway"]
@@ -74,6 +76,12 @@ class Device(BaseModel):
     management: ManagementSpec
     interfaces: list[DeviceInterface] = Field(default_factory=list)
     router_id: str | None = None
+
+    @model_validator(mode="after")
+    def gateway_uses_routed_management(self) -> Device:
+        if self.role == "gateway" and self.management.type != "routed":
+            raise ValueError("gateway devices require management.type=routed (no SVI)")
+        return self
 
     @field_validator("router_id")
     @classmethod

@@ -8,7 +8,7 @@ uv run python scripts/render.py
 uv run pytest tests/
 ```
 
-Rendered configs land in `artifacts/<hostname>.cfg` (ignored by git). Use `--dry-run` to print one sample to stdout. Adjust interface names and `/31` addressing in `data/topology.yaml` to match your GNS3 wiring. For SVI management, place at least one access port in VLAN 99 on each device (not generated in Phase 1).
+Rendered configs land in `artifacts/<hostname>.cfg` (ignored by git). Use `--dry-run` to print one sample to stdout. Adjust interface names and `/31` addressing in `data/topology.yaml` to match your GNS3 wiring. Gateways use a routed management interface (no SVI). For SVI management on leaves/spines, place at least one access port in VLAN 99 (not generated in Phase 1).
 
 ---
 
@@ -19,7 +19,7 @@ Goal: Configs are deterministic, repeatable, and reviewable in Git.
 
 Steps:
 
-Model two spines, two leaves, two gateways, fabric links, loopbacks, and management reachability in YAML.
+Model two spines, two leaves, two gateways (Cisco IOL L3 routers as default gateways), fabric links, loopbacks, and management reachability in YAML.
 Implement leaf.j2, spine.j2, gateway.j2 driven by that data.
 Add a render CLI producing artifacts/<hostname>.cfg.
 (Optional) Schema-validate YAML before render.

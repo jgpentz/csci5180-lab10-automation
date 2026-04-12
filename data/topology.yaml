@@ -1,5 +1,6 @@
-# Spine–leaf lab: 2 spines, 2 leaves, 2 gateways. OSPF area 0 underlay.
-# Interface names follow Cisco IOL style; adjust to match your GNS3/CL wiring.
+# Spine–leaf lab: 2 spines, 2 leaves, 2 gateways.
+# Gateways are Cisco IOL L3 routers (default gateways / northbound routing): routed mgmt only, no SVI.
+# OSPF area 0 underlay. Interface names follow Cisco IOL style; adjust to match GNS3/CL wiring.
 
 version: 1
 global:
@@ -76,8 +77,8 @@ devices:
     loopback:
       cidr: 10.255.101.1/32
     management:
-      type: svi
-      vlan: 99
+      type: routed
+      interface: Ethernet0/2
       cidr: 192.168.99.31/24
     interfaces:
       - name: Ethernet0/0
@@ -90,8 +91,8 @@ devices:
     loopback:
       cidr: 10.255.102.1/32
     management:
-      type: svi
-      vlan: 99
+      type: routed
+      interface: Ethernet0/2
       cidr: 192.168.99.32/24
     interfaces:
       - name: Ethernet0/0

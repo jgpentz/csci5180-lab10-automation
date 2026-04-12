@@ -1,28 +1,18 @@
-! Rendered by automation (Phase 1) — gateway role
+! Rendered by automation (Phase 1) — gateway (Cisco IOL L3 router, default gateway role)
 ! Hostname: {{ hostname }}
 
 hostname {{ hostname }}
 ip routing
-!
-{% if management.type == "svi" %}
-vlan {{ management.vlan }}
- name MANAGEMENT
-{% endif %}
 !
 interface {{ loopback.interface }}
  description Router ID / loopback
  ip address {{ loopback.ip }} {{ loopback.mask }}
  ip ospf {{ ospf.process_id }} area {{ ospf.area }}
 !
-{% if management.type == "svi" %}
-interface Vlan{{ management.vlan }}
- description Out-of-band management
- ip address {{ management.ip }} {{ management.mask }}
-{% else %}
 interface {{ management.interface }}
  description Out-of-band management
  ip address {{ management.ip }} {{ management.mask }}
-{% endif %}
+ no shutdown
 !
 {% for intf in fabric_interfaces %}
 interface {{ intf.name }}

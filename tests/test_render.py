@@ -37,7 +37,8 @@ def test_render_all_produces_non_empty_configs() -> None:
 
     from scripts.render import render_all
 
-    out = render_all(TOPOLOGY, TEMPLATES, AUTOMATION_DIR / "artifacts" / "_test_out", write=False)
+    out_dir = AUTOMATION_DIR / "artifacts" / "_test_out"
+    out = render_all(TOPOLOGY, TEMPLATES, out_dir, write=False)
     assert len(out) == 6
     for hostname, cfg in out.items():
         assert hostname in cfg  # hostname line contains name
