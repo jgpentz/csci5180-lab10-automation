@@ -1,0 +1,18 @@
+[project]
+name = "lab10-automation"
+version = "0.1.0"
+description = "Spine–leaf config rendering and network automation (Lab10)"
+requires-python = ">=3.10"
+dependencies = [
+    "jinja2>=3.1.0",
+    "pydantic>=2.0.0",
+    "PyYAML>=6.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[tool.uv]
+package = false

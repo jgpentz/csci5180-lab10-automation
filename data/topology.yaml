@@ -1,0 +1,100 @@
+# Spine–leaf lab: 2 spines, 2 leaves, 2 gateways. OSPF area 0 underlay.
+# Interface names follow Cisco IOL style; adjust to match your GNS3/CL wiring.
+
+version: 1
+global:
+  ospf_process_id: 1
+  ospf_area: 0
+
+devices:
+  leaf1:
+    role: leaf
+    loopback:
+      cidr: 10.255.1.1/32
+    management:
+      type: svi
+      vlan: 99
+      cidr: 192.168.99.21/24
+    interfaces:
+      - name: Ethernet0/0
+        cidr: 10.0.11.0/31
+      - name: Ethernet0/1
+        cidr: 10.0.12.0/31
+      - name: Ethernet0/2
+        cidr: 10.0.101.0/31
+      - name: Ethernet0/3
+        cidr: 10.0.102.0/31
+
+  leaf2:
+    role: leaf
+    loopback:
+      cidr: 10.255.2.1/32
+    management:
+      type: svi
+      vlan: 99
+      cidr: 192.168.99.22/24
+    interfaces:
+      - name: Ethernet0/0
+        cidr: 10.0.21.0/31
+      - name: Ethernet0/1
+        cidr: 10.0.22.0/31
+      - name: Ethernet0/2
+        cidr: 10.0.201.0/31
+      - name: Ethernet0/3
+        cidr: 10.0.202.0/31
+
+  spine1:
+    role: spine
+    loopback:
+      cidr: 10.255.11.1/32
+    management:
+      type: svi
+      vlan: 99
+      cidr: 192.168.99.11/24
+    interfaces:
+      - name: Ethernet0/0
+        cidr: 10.0.11.1/31
+      - name: Ethernet0/1
+        cidr: 10.0.21.1/31
+
+  spine2:
+    role: spine
+    loopback:
+      cidr: 10.255.12.1/32
+    management:
+      type: svi
+      vlan: 99
+      cidr: 192.168.99.12/24
+    interfaces:
+      - name: Ethernet0/0
+        cidr: 10.0.12.1/31
+      - name: Ethernet0/1
+        cidr: 10.0.22.1/31
+
+  gw1:
+    role: gateway
+    loopback:
+      cidr: 10.255.101.1/32
+    management:
+      type: svi
+      vlan: 99
+      cidr: 192.168.99.31/24
+    interfaces:
+      - name: Ethernet0/0
+        cidr: 10.0.101.1/31
+      - name: Ethernet0/1
+        cidr: 10.0.201.1/31
+
+  gw2:
+    role: gateway
+    loopback:
+      cidr: 10.255.102.1/32
+    management:
+      type: svi
+      vlan: 99
+      cidr: 192.168.99.32/24
+    interfaces:
+      - name: Ethernet0/0
+        cidr: 10.0.102.1/31
+      - name: Ethernet0/1
+        cidr: 10.0.202.1/31
