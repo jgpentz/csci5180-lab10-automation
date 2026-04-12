@@ -1,0 +1,25 @@
+# Copy to data/inventory.yaml (gitignored) and set reachable management IPs.
+# SSH password: export LAB10_SSH_PASSWORD=...
+# Optional enable secret: export LAB10_ENABLE_SECRET=... (omit if not needed)
+
+version: 1
+defaults:
+  device_type: cisco_ios
+  username: cisco
+  port: 22
+  password_env: LAB10_SSH_PASSWORD
+  secret_env: LAB10_ENABLE_SECRET
+
+devices:
+  leaf1:
+    host: 192.168.99.21
+  leaf2:
+    host: 192.168.99.22
+  spine1:
+    host: 192.168.99.11
+  spine2:
+    host: 192.168.99.12
+  gw1:
+    host: 192.168.99.31
+  gw2:
+    host: 192.168.99.32

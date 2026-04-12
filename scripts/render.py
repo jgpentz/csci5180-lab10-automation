@@ -7,15 +7,13 @@ import argparse
 import sys
 from pathlib import Path
 
-import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-# automation/ is the package root when run as python scripts/render.py from automation/
 _AUTOMATION_DIR = Path(__file__).resolve().parent.parent
 if str(_AUTOMATION_DIR) not in sys.path:
     sys.path.insert(0, str(_AUTOMATION_DIR))
 
-from topology_schema import Topology, ios_ipv4_with_mask  # noqa: E402
+from lab_tools import ios_ipv4_with_mask, load_topology, router_id  # noqa: E402
 
 ROLE_TEMPLATES = {
     "leaf": "leaf.j2",
@@ -24,56 +22,44 @@ ROLE_TEMPLATES = {
 }
 
 
-def load_topology(path: Path) -> Topology:
-    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return Topology.model_validate(raw)
-
-
-def device_context(hostname: str, topo: Topology) -> dict:
-    dev = topo.devices[hostname]
-    g = topo.global_settings
-    rid = topo.router_id_for(dev)
-
-    lb_ip, lb_mask = ios_ipv4_with_mask(dev.loopback.cidr)
-    mg_ip, mg_mask = ios_ipv4_with_mask(dev.management.cidr)
-
-    management: dict = {
-        "type": dev.management.type,
-        "ip": mg_ip,
-        "mask": mg_mask,
-    }
-    if dev.management.type == "svi":
-        management["vlan"] = dev.management.vlan
+def device_context(hostname: str, topo: dict) -> dict:
+    dev = topo["devices"][hostname]
+    g = topo["global"]
+    lb = dev["loopback"]
+    mg = dev["management"]
+    lb_ip, lb_mask = ios_ipv4_with_mask(lb["cidr"])
+    mg_ip, mg_mask = ios_ipv4_with_mask(mg["cidr"])
+    management: dict = {"type": mg["type"], "ip": mg_ip, "mask": mg_mask}
+    if mg["type"] == "svi":
+        management["vlan"] = mg["vlan"]
     else:
-        management["interface"] = dev.management.interface
+        management["interface"] = mg["interface"]
 
     fabric = []
-    for intf in dev.interfaces:
-        ip, mask = ios_ipv4_with_mask(intf.cidr)
+    for intf in dev.get("interfaces") or []:
+        ip, mask = ios_ipv4_with_mask(intf["cidr"])
+        on = intf.get("ospf_network", "point-to-point")
         fabric.append(
             {
-                "name": intf.name,
+                "name": intf["name"],
                 "ip": ip,
                 "mask": mask,
-                "ospf_network": intf.ospf_network.replace("_", "-"),
+                "ospf_network": on.replace("_", "-"),
             }
         )
 
     return {
         "hostname": hostname,
-        "router_id": rid,
+        "router_id": router_id(topo, hostname),
         "loopback": {
-            "interface": dev.loopback.interface,
+            "interface": lb.get("interface", "Loopback0"),
             "ip": lb_ip,
             "mask": lb_mask,
         },
         "management": management,
         "fabric_interfaces": fabric,
         "fabric_interface_names": [f["name"] for f in fabric],
-        "ospf": {
-            "process_id": g.ospf_process_id,
-            "area": g.ospf_area,
-        },
+        "ospf": {"process_id": g["ospf_process_id"], "area": g["ospf_area"]},
     }
 
 
@@ -94,8 +80,8 @@ def render_all(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     rendered: dict[str, str] = {}
-    for hostname, dev in topo.devices.items():
-        template_name = ROLE_TEMPLATES[dev.role]
+    for hostname, dev in topo["devices"].items():
+        template_name = ROLE_TEMPLATES[dev["role"]]
         template = env.get_template(template_name)
         text = template.render(**device_context(hostname, topo))
         rendered[hostname] = text
@@ -138,14 +124,14 @@ def main() -> int:
 
     if args.dry_run:
         topo = load_topology(args.topology)
-        hostname = next(iter(topo.devices))
+        hostname = next(iter(topo["devices"]))
         env = Environment(
             loader=FileSystemLoader(str(args.templates)),
             trim_blocks=True,
             lstrip_blocks=True,
         )
-        dev = topo.devices[hostname]
-        template = env.get_template(ROLE_TEMPLATES[dev.role])
+        dev = topo["devices"][hostname]
+        template = env.get_template(ROLE_TEMPLATES[dev["role"]])
         print(template.render(**device_context(hostname, topo)))
         return 0
 
