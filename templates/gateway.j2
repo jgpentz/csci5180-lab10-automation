@@ -1,4 +1,5 @@
 ! Hostname: {{ hostname }}
+! IOU L3: routed ports only.
 
 hostname {{ hostname }}
 ip routing
@@ -28,4 +29,10 @@ router ospf {{ ospf.process_id }}
 {% for name in fabric_interface_names %}
  no passive-interface {{ name }}
 {% endfor %}
+!
+snmp-server community {{ snmp.community }} RO
+snmp-server location {{ snmp.location }}
+snmp-server contact {{ snmp.contact }}
+snmp-server enable traps
+snmp-server host {{ snmp.trap_host }} {{ snmp.community }}
 !

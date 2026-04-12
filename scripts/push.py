@@ -20,7 +20,7 @@ from lab_tools import (  # noqa: E402
 )
 
 
-def main() -> int:
+def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     data = _AUTOMATION_DIR / "data"
     ap.add_argument("--inventory", type=Path, default=data / "inventory.yaml")
@@ -91,4 +91,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    # Pass in dry run to print the plan without actually pushing
+    raise SystemExit(main(["--dry-run"]))

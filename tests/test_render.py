@@ -42,6 +42,8 @@ def test_render_all_produces_non_empty_configs() -> None:
         assert hostname in cfg
         assert "router ospf" in cfg
         assert "ip ospf" in cfg
+        assert "snmp-server community public RO" in cfg
+        assert "snmp-server host 192.168.99.1 public" in cfg
 
 
 if __name__ == "__main__":

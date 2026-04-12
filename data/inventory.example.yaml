@@ -1,6 +1,6 @@
-# Copy to data/inventory.yaml (gitignored) and set reachable management IPs.
-# SSH password: export LAB10_SSH_PASSWORD=...
-# Optional enable secret: export LAB10_ENABLE_SECRET=... (omit if not needed)
+# Copy to data/inventory.yaml (gitignored). Set host to each device's mgmt IP.
+# export LAB10_SSH_PASSWORD=...
+# Optional: export LAB10_ENABLE_SECRET=...
 
 version: 1
 defaults:
@@ -12,13 +12,13 @@ defaults:
 
 devices:
   leaf1:
-    host: 192.168.99.21
-  leaf2:
-    host: 192.168.99.22
-  spine1:
     host: 192.168.99.11
-  spine2:
+  leaf2:
     host: 192.168.99.12
+  spine1:
+    host: 192.168.99.21
+  spine2:
+    host: 192.168.99.22
   gw1:
     host: 192.168.99.31
   gw2:

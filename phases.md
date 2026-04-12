@@ -18,7 +18,7 @@ uv run python scripts/render.py
 uv run pytest tests/
 ```
 
-Rendered configs land in `artifacts/<hostname>.cfg` (ignored by git). Use `--dry-run` to print one sample to stdout. Adjust interface names and `/31` addressing in `data/topology.yaml` to match your GNS3 wiring. Gateways use a routed management interface (no SVI). For SVI management on leaves/spines, place at least one access port in VLAN 99 (not generated in Phase 1).
+Rendered configs land in `artifacts/<hostname>.cfg` (ignored by git). Use `--dry-run` to print one sample to stdout. All nodes are **IOU L3**: management is a **routed** `Ethernet…` address from `topology.yaml` (no VLANs/SVIs). Match interface names to `show ip interface brief` and your GNS3 links; leaves use `Ethernet1/0` for mgmt by default (see comment in `topology.yaml`).
 
 ## Phase 2 — usage
 
@@ -76,6 +76,7 @@ Inventory management IPs and access for each node (`data/inventory.example.yaml`
 Implement Netmiko push (`scripts/push.py`); merge semantics and apply order in `lab_tools.hostnames_in_deploy_order`.
 Verify OSPF neighbors and ping (`scripts/verify.py`); expected neighbor count from `lab_tools.expected_ospf_neighbors()`.
 Document common failure modes and recovery (Phase 2 usage section).
+
 Phase 3 — Containerlab twin and automated tests
 Description: Same logical design with IOL in Containerlab, same templates/data (or a small CI inventory overlay), then automated tests after push.
 
@@ -88,6 +89,7 @@ Align interface naming/hostnames between CL and data model.
 Automate deploy, render, push.
 Pytest: OSPF neighbor counts/states, reachability.
 Teardown with containerlab destroy.
+
 Phase 4 — CI on commit
 Description: CI runs validation + Containerlab pipeline on each commit/PR; store artifacts.
 

@@ -29,11 +29,11 @@ def device_context(hostname: str, topo: dict) -> dict:
     mg = dev["management"]
     lb_ip, lb_mask = ios_ipv4_with_mask(lb["cidr"])
     mg_ip, mg_mask = ios_ipv4_with_mask(mg["cidr"])
-    management: dict = {"type": mg["type"], "ip": mg_ip, "mask": mg_mask}
-    if mg["type"] == "svi":
-        management["vlan"] = mg["vlan"]
-    else:
-        management["interface"] = mg["interface"]
+    management = {
+        "interface": mg["interface"],
+        "ip": mg_ip,
+        "mask": mg_mask,
+    }
 
     fabric = []
     for intf in dev.get("interfaces") or []:
@@ -48,6 +48,14 @@ def device_context(hostname: str, topo: dict) -> dict:
             }
         )
 
+    s = g.get("snmp") or {}
+    snmp = {
+        "community": s.get("community", "public"),
+        "location": s.get("location", "Denver-DC"),
+        "contact": s.get("contact", "WDTC-NOC"),
+        "trap_host": s.get("trap_host", "192.168.99.1"),
+    }
+
     return {
         "hostname": hostname,
         "router_id": router_id(topo, hostname),
@@ -60,6 +68,7 @@ def device_context(hostname: str, topo: dict) -> dict:
         "fabric_interfaces": fabric,
         "fabric_interface_names": [f["name"] for f in fabric],
         "ospf": {"process_id": g["ospf_process_id"], "area": g["ospf_area"]},
+        "snmp": snmp,
     }
 
 

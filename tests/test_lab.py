@@ -37,7 +37,7 @@ def test_example_inventory_yaml_readable() -> None:
 
 def test_load_inventory_file() -> None:
     inv = load_inventory(EXAMPLE_INV)
-    assert inv["devices"]["spine1"]["host"] == "192.168.99.11"
+    assert inv["devices"]["spine1"]["host"] == "192.168.99.21"
 
 
 def test_deploy_order(topo: dict) -> None:

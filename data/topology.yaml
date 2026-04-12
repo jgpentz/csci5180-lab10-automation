@@ -1,11 +1,16 @@
-# Spine–leaf lab: 2 spines, 2 leaves, 2 gateways.
-# Gateways are Cisco IOL L3 routers (default gateways / northbound routing): routed mgmt only, no SVI.
-# OSPF area 0 underlay. Interface names follow Cisco IOL style; adjust to match GNS3/CL wiring.
+# Spine–leaf lab: IOU L3 only — routed mgmt on a dedicated Ethernet (no VLANs/SVIs).
+# Leaves: fabric e0/0–3; mgmt on Ethernet1/0 (add NIC/slot in GNS3 if your image has only slot 0).
+# Spines/gateways: fabric e0/0–1; mgmt on Ethernet0/2. Adjust names to match show ip int brief.
 
 version: 1
 global:
   ospf_process_id: 1
   ospf_area: 0
+  snmp:
+    community: public
+    location: Denver-DC
+    contact: WDTC-NOC
+    trap_host: 192.168.99.1
 
 devices:
   leaf1:
@@ -13,9 +18,8 @@ devices:
     loopback:
       cidr: 10.255.1.1/32
     management:
-      type: svi
-      vlan: 99
-      cidr: 192.168.99.21/24
+      interface: Ethernet1/0
+      cidr: 192.168.99.11/24
     interfaces:
       - name: Ethernet0/0
         cidr: 10.0.11.0/31
@@ -31,9 +35,8 @@ devices:
     loopback:
       cidr: 10.255.2.1/32
     management:
-      type: svi
-      vlan: 99
-      cidr: 192.168.99.22/24
+      interface: Ethernet1/0
+      cidr: 192.168.99.12/24
     interfaces:
       - name: Ethernet0/0
         cidr: 10.0.21.0/31
@@ -49,9 +52,8 @@ devices:
     loopback:
       cidr: 10.255.11.1/32
     management:
-      type: svi
-      vlan: 99
-      cidr: 192.168.99.11/24
+      interface: Ethernet0/2
+      cidr: 192.168.99.21/24
     interfaces:
       - name: Ethernet0/0
         cidr: 10.0.11.1/31
@@ -63,9 +65,8 @@ devices:
     loopback:
       cidr: 10.255.12.1/32
     management:
-      type: svi
-      vlan: 99
-      cidr: 192.168.99.12/24
+      interface: Ethernet0/2
+      cidr: 192.168.99.22/24
     interfaces:
       - name: Ethernet0/0
         cidr: 10.0.12.1/31
@@ -77,7 +78,6 @@ devices:
     loopback:
       cidr: 10.255.101.1/32
     management:
-      type: routed
       interface: Ethernet0/2
       cidr: 192.168.99.31/24
     interfaces:
@@ -91,7 +91,6 @@ devices:
     loopback:
       cidr: 10.255.102.1/32
     management:
-      type: routed
       interface: Ethernet0/2
       cidr: 192.168.99.32/24
     interfaces:
