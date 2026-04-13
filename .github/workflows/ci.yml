@@ -75,7 +75,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull Cisco IOL image
-        run: sudo docker pull ghcr.io/jgpentz/cisco_iol:17.15.01
+        run: docker pull ghcr.io/jgpentz/cisco_iol:17.15.01
 
       - name: Run containerlab twin pipeline
         env:
