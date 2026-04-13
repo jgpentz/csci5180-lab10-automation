@@ -2,32 +2,32 @@ name: lab10-twin
 
 mgmt:
   network: lab10
-  ipv4-subnet: 192.168.100.0/24
+  ipv4-subnet: 192.168.99.0/24
 
 topology:
   kinds:
     cisco_iol:
-      image: vrnetlab/cisco_iol:17.15.01
+      image: ghcr.io/jgpentz/cisco_iol:17.15.01
 
   nodes:
     leaf1:
       kind: cisco_iol
-      mgmt-ipv4: 192.168.100.11
+      mgmt-ipv4: 192.168.99.11
     leaf2:
       kind: cisco_iol
-      mgmt-ipv4: 192.168.100.12
+      mgmt-ipv4: 192.168.99.12
     spine1:
       kind: cisco_iol
-      mgmt-ipv4: 192.168.100.21
+      mgmt-ipv4: 192.168.99.21
     spine2:
       kind: cisco_iol
-      mgmt-ipv4: 192.168.100.22
+      mgmt-ipv4: 192.168.99.22
     gw1:
       kind: cisco_iol
-      mgmt-ipv4: 192.168.100.31
+      mgmt-ipv4: 192.168.99.31
     gw2:
       kind: cisco_iol
-      mgmt-ipv4: 192.168.100.32
+      mgmt-ipv4: 192.168.99.32
 
   links:
     # leaf1 uplinks and gateways (maps to Ethernet0/0-0/3 in IOL)

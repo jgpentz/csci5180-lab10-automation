@@ -3,21 +3,20 @@
 version: 1
 defaults:
   device_type: cisco_ios
-  username: cisco
+  username: admin
   port: 22
-  password_env: LAB10_SSH_PASSWORD
-  secret_env: ""
+  password: admin
 
 devices:
   leaf1:
-    host: 192.168.100.11
+    host: 192.168.99.11
   leaf2:
-    host: 192.168.100.12
+    host: 192.168.99.12
   spine1:
-    host: 192.168.100.21
+    host: 192.168.99.21
   spine2:
-    host: 192.168.100.22
+    host: 192.168.99.22
   gw1:
-    host: 192.168.100.31
+    host: 192.168.99.31
   gw2:
-    host: 192.168.100.32
+    host: 192.168.99.32
