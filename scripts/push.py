@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Push artifacts/<host>.cfg to routers (SSH / Netmiko, merge into running config)."""
+"""Push artifacts/<host>.cfg via Netmiko (merge into running), then write memory."""
 
 from __future__ import annotations
 
@@ -78,6 +78,7 @@ def main(argv: list[str] | None = None) -> int:
                 if kw.get("secret"):
                     conn.enable()
                 conn.send_config_from_file(str(cfg), exit_config_mode=True)
+                conn.save_config(cmd="write memory", confirm=True, confirm_response="y")
         except Exception as e:
             errors.append(f"{h}: {e}")
             print(errors[-1], file=sys.stderr)
@@ -92,14 +93,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-    # # Debug (no args): same as
-    # #   uv run python scripts/push.py --inventory data/inventory.containerlab.yaml \
-    # #     --topology data/topology.containerlab.yaml
-    # # With args: normal CLI, e.g. uv run python scripts/push.py --dry-run
-    # _debug = [
-    #     "--inventory",
-    #     str(_AUTOMATION_DIR / "data" / "inventory.containerlab.yaml"),
-    #     "--topology",
-    #     str(_AUTOMATION_DIR / "data" / "topology.containerlab.yaml"),
-    # ]
-    # raise SystemExit(main(_debug))
