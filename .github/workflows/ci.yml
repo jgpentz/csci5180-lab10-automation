@@ -5,17 +5,7 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
-    inputs:
-      debug:
-        description: "Open tmate session for runner debug"
-        required: false
-        default: "false"
-        type: choice
-        options:
-          - "false"
-          - "true"
 
-  
 permissions:
   contents: read
   packages: read
@@ -82,9 +72,3 @@ jobs:
           LAB10_SSH_PASSWORD: admin
           LAB10_SSH_PASSWORD_CLAB: admin
         run: uv run python scripts/clab_twin.py --ssh-timeout 300
-
-      - name: Tmate debug session
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug == 'true' }}
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
