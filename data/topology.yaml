@@ -1,6 +1,10 @@
 # Spine–leaf lab: IOU L3 only — routed mgmt on a dedicated Ethernet (no VLANs/SVIs).
-# Leaves: fabric e0/0–3; mgmt on Ethernet1/0 (add NIC/slot in GNS3 if your image has only slot 0).
-# Spines/gateways: fabric e0/0–1; mgmt on Ethernet0/2. Adjust names to match show ip int brief.
+# Leaves: fabric e0/0–3; lab mgmt on Ethernet1/0 (add NIC/slot in GNS3 if your image has only slot 0).
+# Spines/gateways: fabric e0/0–1; lab mgmt on Ethernet1/0 below. Adjust names to match show ip int brief.
+#
+# Containerlab twin: Docker SSH always lands on IOS Ethernet0/0 (clab-mgmt VRF) — that is not this lab mgmt.
+# Rendered configs below still use Ethernet1/0 for the lab OOB subnet so they match GNS3; push applies that
+# after the node boots. See configs/clab-startup.cfg.tmpl vs templates/*.j2.
 
 version: 1
 global:
@@ -52,7 +56,7 @@ devices:
     loopback:
       cidr: 10.255.11.1/32
     management:
-      interface: Ethernet0/2
+      interface: Ethernet1/0
       cidr: 192.168.99.21/24
     interfaces:
       - name: Ethernet0/0
@@ -65,7 +69,7 @@ devices:
     loopback:
       cidr: 10.255.12.1/32
     management:
-      interface: Ethernet0/2
+      interface: Ethernet1/0
       cidr: 192.168.99.22/24
     interfaces:
       - name: Ethernet0/0
@@ -78,7 +82,7 @@ devices:
     loopback:
       cidr: 10.255.101.1/32
     management:
-      interface: Ethernet0/2
+      interface: Ethernet1/0
       cidr: 192.168.99.31/24
     interfaces:
       - name: Ethernet0/0
@@ -91,7 +95,7 @@ devices:
     loopback:
       cidr: 10.255.102.1/32
     management:
-      interface: Ethernet0/2
+      interface: Ethernet1/0
       cidr: 192.168.99.32/24
     interfaces:
       - name: Ethernet0/0

@@ -50,9 +50,39 @@ uv run python scripts/push.py --only spine1,spine2
 
 **Common failures:** SSH timeout or auth errors → fix `host`/port/firewall or `LAB10_SSH_PASSWORD`. Missing `artifacts/<name>.cfg` → run `render.py` first. OSPF neighbor count low → physical link or IP mismatch vs `topology.yaml`, or interface still shutdown. Ping fails while OSPF is OK → check loopback addresses, `passive-interface`, or wait for convergence. Enable errors → leave `LAB10_ENABLE_SECRET` unset if you already log in at privilege 15, or set per-device `secret_env: ""` in `inventory.yaml` to skip enable.
 
+## Phase 3 — usage
+
+The Containerlab twin keeps the same `data/topology.yaml` and templates while using a separate inventory overlay (`data/inventory.containerlab.yaml`) and topology file (`containerlab/lab10.clab.yml`).
+
+Set credentials, then run the full disposable pipeline:
+
+```bash
+export LAB10_SSH_PASSWORD=...
+# optional:
+export LAB10_ENABLE_SECRET=...
+
+uv run python scripts/clab_twin.py
+```
+
+What `clab_twin.py` does:
+
+1. `containerlab deploy -t containerlab/lab10.clab.yml --reconfigure`
+2. wait for SSH on all nodes from `inventory.containerlab.yaml`
+3. `render.py` → `push.py` (same deploy order: spine → leaf → gateway)
+4. run live pytest checks in `tests/test_containerlab.py` (OSPF FULL + leaf loopback pings)
+5. destroy lab with `containerlab destroy ... --cleanup`
+
+Useful flags:
+
+```bash
+uv run python scripts/clab_twin.py --keep
+uv run python scripts/clab_twin.py --ssh-timeout 300
+uv run python scripts/clab_twin.py --pytest-target tests/test_containerlab.py
+```
+
 ---
 
-Phase 1 — Data model and rendering
+## Phase 1 — Data model and rendering
 Description: Describe the network (devices, roles, interfaces, IPs, OSPF, OOB) in YAML and generate per-device Cisco configs from Jinja2—no hardware required.
 
 Goal: Configs are deterministic, repeatable, and reviewable in Git.
@@ -65,7 +95,7 @@ Add a render CLI producing artifacts/<hostname>.cfg.
 (Optional) Schema-validate YAML before render.
 Spot-check one device in lab for syntax and behavior.
 
-Phase 2 — Deploy and verify on GNS3 (manual automation) — **implemented**
+## Phase 2 — Deploy and verify on GNS3 (manual automation) — **implemented**
 Description: Push rendered configs to the GNS3 IOL topology over OOB and prove routing behavior.
 
 Goal: Netmiko push works for all nodes; verification (OSPF + ping) is scripted or runbooked.
@@ -77,7 +107,7 @@ Implement Netmiko push (`scripts/push.py`); merge semantics and apply order in `
 Verify OSPF neighbors and ping (`scripts/verify.py`); expected neighbor count from `lab_tools.expected_ospf_neighbors()`.
 Document common failure modes and recovery (Phase 2 usage section).
 
-Phase 3 — Containerlab twin and automated tests
+## Phase 3 — Containerlab twin and automated tests
 Description: Same logical design with IOL in Containerlab, same templates/data (or a small CI inventory overlay), then automated tests after push.
 
 Goal: Disposable lab: deploy → configure → test → destroy, without GNS3.
@@ -90,7 +120,7 @@ Automate deploy, render, push.
 Pytest: OSPF neighbor counts/states, reachability.
 Teardown with containerlab destroy.
 
-Phase 4 — CI on commit
+## Phase 4 — CI on commit
 Description: CI runs validation + Containerlab pipeline on each commit/PR; store artifacts.
 
 Goal: Bad changes fail in CI before promotion; green builds produce traceable artifacts.
@@ -101,7 +131,8 @@ CI job: deps, schema/render tests.
 CI job: Containerlab deploy, push, pytest.
 Upload rendered configs + checksums as artifacts.
 (Optional) PR = phases 1–3 only; main adds promotion.
-Phase 5 — Promotion to GNS3 (golden path)
+
+## Phase 5 — Promotion to GNS3 (golden path)
 Description: After a green CI build, apply golden configs to the GNS3 “production” topology.
 
 Goal: Clear test vs prod separation and a controlled promotion step.
