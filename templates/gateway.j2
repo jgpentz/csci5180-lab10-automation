@@ -9,11 +9,13 @@ interface {{ loopback.interface }}
  ip address {{ loopback.ip }} {{ loopback.mask }}
  ip ospf {{ ospf.process_id }} area {{ ospf.area }}
 !
+{% if management %}
 interface {{ management.interface }}
  description Out-of-band management
  ip address {{ management.ip }} {{ management.mask }}
  no shutdown
 !
+{% endif %}
 {% for intf in fabric_interfaces %}
 interface {{ intf.name }}
  description Toward leaf (OSPF)

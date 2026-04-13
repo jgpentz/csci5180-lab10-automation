@@ -30,13 +30,16 @@ topology:
       mgmt-ipv4: 192.168.99.32
 
   links:
-    # leaf1 uplinks and gateways (maps to Ethernet0/0-0/3 in IOL)
+    # leaf1 uplinks (clab eth1..eth4 → IOL Ethernet0/1–0/3, E1/0 per cisco_iol kind)
     - endpoints: ["leaf1:eth1", "spine1:eth1"] # 10.0.11.0/31
     - endpoints: ["leaf1:eth2", "spine2:eth1"] # 10.0.12.0/31
     - endpoints: ["leaf1:eth3", "gw1:eth1"]    # 10.0.101.0/31
     - endpoints: ["leaf1:eth4", "gw2:eth1"]    # 10.0.102.0/31
+    - endpoints: ["leaf1:eth5", "leaf2:eth5"]    # 10.0.102.0/31
+    - endpoints: ["leaf1:eth6", "spine1:eth5"]    # 10.0.102.0/31
+    - endpoints: ["leaf1:eth7", "spine2:eth5"]    # 10.0.102.0/31
 
-    # leaf2 uplinks and gateways (maps to Ethernet0/0-0/3 in IOL)
+    # leaf2 uplinks (same eth→IOS mapping as leaf1)
     - endpoints: ["leaf2:eth1", "spine1:eth2"] # 10.0.21.0/31
     - endpoints: ["leaf2:eth2", "spine2:eth2"] # 10.0.22.0/31
     - endpoints: ["leaf2:eth3", "gw1:eth2"]    # 10.0.201.0/31

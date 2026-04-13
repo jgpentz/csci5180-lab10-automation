@@ -28,12 +28,17 @@ def device_context(hostname: str, topo: dict) -> dict:
     lb = dev["loopback"]
     mg = dev["management"]
     lb_ip, lb_mask = ios_ipv4_with_mask(lb["cidr"])
-    mg_ip, mg_mask = ios_ipv4_with_mask(mg["cidr"])
-    management = {
-        "interface": mg["interface"],
-        "ip": mg_ip,
-        "mask": mg_mask,
-    }
+    cr = (g.get("containerlab_render") or {}) if isinstance(g, dict) else {}
+    skip_mgmt = bool(cr.get("skip_management_interface"))
+    if skip_mgmt:
+        management = None
+    else:
+        mg_ip, mg_mask = ios_ipv4_with_mask(mg["cidr"])
+        management = {
+            "interface": mg["interface"],
+            "ip": mg_ip,
+            "mask": mg_mask,
+        }
 
     fabric = []
     for intf in dev.get("interfaces") or []:
@@ -100,7 +105,7 @@ def render_all(
     return rendered
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--topology",
@@ -125,7 +130,7 @@ def main() -> int:
         action="store_true",
         help="Validate and render to stdout only (first device only for brevity)",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if not args.topology.is_file():
         print(f"Topology file not found: {args.topology}", file=sys.stderr)
@@ -151,3 +156,11 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+    # Debug (no args): same as
+    #   uv run python scripts/render.py --topology data/topology.containerlab.yaml
+    # With args: normal CLI, e.g. uv run python scripts/render.py --dry-run
+    # _debug = [
+    #     "--topology",
+    #     str(_AUTOMATION_DIR / "data" / "topology.containerlab.yaml"),
+    # ]
+    # raise SystemExit(main(sys.argv[1:] if len(sys.argv) > 1 else _debug))

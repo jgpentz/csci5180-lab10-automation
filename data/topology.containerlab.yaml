@@ -1,0 +1,112 @@
+# Containerlab overlay for data/topology.yaml (same IPs, OSPF, SNMP).
+#
+# Cisco IOL in containerlab maps Linux NICs to IOS as: eth0 → Ethernet0/0
+# (management / clab-mgmt VRF plumbing), eth1 → Ethernet0/1, eth2 → E0/2,
+# eth3 → E0/3, eth4 → Ethernet1/0, … See containerlab.dev manual (kind cisco_iol).
+#
+# GNS3 golden topology keeps management on Ethernet1/0 and fabric on E0/0–0/3 (or
+# E0/0–0/1 on spines/gateways). This file renumbers fabric to E0/1+ to match data
+# links. Management IPs stay in YAML for reference; rendered IOS skips the mgmt
+# block (global.containerlab_render.skip_management_interface) so push does not
+# strip vrf forwarding clab-mgmt from Ethernet0/0.
+
+version: 1
+global:
+  # Do not emit interface … management in rendered IOS; clab already configures
+  # Ethernet0/0 in vrf clab-mgmt (see containerlab nodes/iol/iol.cfg.tmpl).
+  containerlab_render:
+    skip_management_interface: true
+  ospf_process_id: 1
+  ospf_area: 0
+  snmp:
+    community: public
+    location: Denver-DC
+    contact: WDTC-NOC
+    trap_host: 192.168.99.1
+
+devices:
+  leaf1:
+    role: leaf
+    loopback:
+      cidr: 10.255.1.1/32
+    management:
+      interface: Ethernet0/0
+      cidr: 192.168.99.11/24
+    interfaces:
+      - name: Ethernet0/1
+        cidr: 10.0.11.0/31
+      - name: Ethernet0/2
+        cidr: 10.0.12.0/31
+      - name: Ethernet0/3
+        cidr: 10.0.101.0/31
+      - name: Ethernet1/0
+        cidr: 10.0.102.0/31
+
+  leaf2:
+    role: leaf
+    loopback:
+      cidr: 10.255.2.1/32
+    management:
+      interface: Ethernet0/0
+      cidr: 192.168.99.12/24
+    interfaces:
+      - name: Ethernet0/1
+        cidr: 10.0.21.0/31
+      - name: Ethernet0/2
+        cidr: 10.0.22.0/31
+      - name: Ethernet0/3
+        cidr: 10.0.201.0/31
+      - name: Ethernet1/0
+        cidr: 10.0.202.0/31
+
+  spine1:
+    role: spine
+    loopback:
+      cidr: 10.255.11.1/32
+    management:
+      interface: Ethernet0/0
+      cidr: 192.168.99.21/24
+    interfaces:
+      - name: Ethernet0/1
+        cidr: 10.0.11.1/31
+      - name: Ethernet0/2
+        cidr: 10.0.21.1/31
+
+  spine2:
+    role: spine
+    loopback:
+      cidr: 10.255.12.1/32
+    management:
+      interface: Ethernet0/0
+      cidr: 192.168.99.22/24
+    interfaces:
+      - name: Ethernet0/1
+        cidr: 10.0.12.1/31
+      - name: Ethernet0/2
+        cidr: 10.0.22.1/31
+
+  gw1:
+    role: gateway
+    loopback:
+      cidr: 10.255.101.1/32
+    management:
+      interface: Ethernet0/0
+      cidr: 192.168.99.31/24
+    interfaces:
+      - name: Ethernet0/1
+        cidr: 10.0.101.1/31
+      - name: Ethernet0/2
+        cidr: 10.0.201.1/31
+
+  gw2:
+    role: gateway
+    loopback:
+      cidr: 10.255.102.1/32
+    management:
+      interface: Ethernet0/0
+      cidr: 192.168.99.32/24
+    interfaces:
+      - name: Ethernet0/1
+        cidr: 10.0.102.1/31
+      - name: Ethernet0/2
+        cidr: 10.0.202.1/31

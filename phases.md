@@ -52,7 +52,7 @@ uv run python scripts/push.py --only spine1,spine2
 
 ## Phase 3 — usage
 
-The Containerlab twin keeps the same `data/topology.yaml` and templates while using a separate inventory overlay (`data/inventory.containerlab.yaml`) and topology file (`containerlab/lab10.clab.yml`).
+The Containerlab twin uses `data/topology.containerlab.yaml` (fabric names aligned to clab `eth1+` → IOS mapping; mgmt block omitted in render so clab’s `clab-mgmt` VRF on `Ethernet0/0` stays intact), `data/inventory.containerlab.yaml`, and `containerlab/lab10.clab.yml`. GNS3 / CI unit tests keep using `data/topology.yaml`.
 
 Set credentials, then run the full disposable pipeline:
 

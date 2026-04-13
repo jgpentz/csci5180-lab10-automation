@@ -2,9 +2,8 @@
 # Leaves: fabric e0/0–3; lab mgmt on Ethernet1/0 (add NIC/slot in GNS3 if your image has only slot 0).
 # Spines/gateways: fabric e0/0–1; lab mgmt on Ethernet1/0 below. Adjust names to match show ip int brief.
 #
-# Containerlab twin: Docker SSH always lands on IOS Ethernet0/0 (clab-mgmt VRF) — that is not this lab mgmt.
-# Rendered configs below still use Ethernet1/0 for the lab OOB subnet so they match GNS3; push applies that
-# after the node boots. See configs/clab-startup.cfg.tmpl vs templates/*.j2.
+# Containerlab: render/push with data/topology.containerlab.yaml (mgmt Ethernet0/0,
+# fabric names offset to match eth1→Ethernet0/1, …). This file stays GNS3-oriented.
 
 version: 1
 global:

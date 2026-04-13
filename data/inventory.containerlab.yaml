@@ -1,11 +1,12 @@
-# Containerlab twin inventory.
-# Use with scripts/push.py and scripts/verify.py once lab10.clab.yml is deployed.
+# Copy to data/inventory.yaml (gitignored). Set host to each device's mgmt IP.
+# export LAB10_SSH_PASSWORD=...
 version: 1
 defaults:
   device_type: cisco_ios
   username: admin
   port: 22
-  password: admin
+  password_env: LAB10_SSH_PASSWORD_CLAB
+  secret_env: LAB10_ENABLE_SECRET
 
 devices:
   leaf1:

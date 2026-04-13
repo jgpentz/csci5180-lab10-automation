@@ -62,10 +62,18 @@ def main() -> int:
     ap.add_argument(
         "--topology",
         type=Path,
-        default=_AUTOMATION_DIR / "data" / "topology.yaml",
+        default=_AUTOMATION_DIR / "data" / "topology.containerlab.yaml",
+        help="Lab topology YAML (use topology.containerlab.yaml for clab NIC mapping)",
     )
     ap.add_argument("--pytest-target", default="tests/test_containerlab.py")
     ap.add_argument("--ssh-timeout", type=int, default=180)
+    ap.add_argument(
+        "--convergence-wait",
+        type=int,
+        default=20,
+        metavar="SEC",
+        help="Seconds to sleep after push before live tests (OSPF/routing); 0 to skip",
+    )
     ap.add_argument(
         "--keep",
         action="store_true",
@@ -103,6 +111,10 @@ def main() -> int:
                 str(args.topology),
             ]
         )
+        if args.convergence_wait > 0:
+            w = args.convergence_wait
+            print(f"Waiting {w}s for routing to converge before tests ...")
+            time.sleep(args.convergence_wait)
         env = dict(os.environ)
         env["LAB10_LIVE_TESTS"] = "1"
         env["LAB10_INVENTORY"] = str(args.inventory)

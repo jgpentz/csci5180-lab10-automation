@@ -42,7 +42,7 @@ def netmiko_connect_kwargs(inv: dict[str, Any], hostname: str) -> dict[str, Any]
     dfl = inv.get("defaults") or {}
     pwd_env = conn.get("password_env") or dfl.get("password_env", "LAB10_SSH_PASSWORD")
     pw = os.environ.get(pwd_env)
-    if not pw:
+    if not pw: 
         raise KeyError(f"Set {pwd_env} for SSH ({hostname!r}).")
 
     port = conn.get("port")

@@ -42,7 +42,7 @@ def _inventory_path() -> Path:
 
 
 def _topology_path() -> Path:
-    default = AUTOMATION_DIR / "data" / "topology.yaml"
+    default = AUTOMATION_DIR / "data" / "topology.containerlab.yaml"
     return Path(os.environ.get("LAB10_TOPOLOGY", str(default)))
 
 
@@ -89,3 +89,6 @@ def test_leaf_reachability(live_data: tuple[dict, dict]) -> None:
             cmd = f"ping {dst} repeat 5 source {src_ip}"
             output = conn.send_command(cmd, read_timeout=90)
         assert ping_was_successful(output), f"{src} cannot reach {dst}"
+
+if __name__ == "__main__":
+    pytest.main()

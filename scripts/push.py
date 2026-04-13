@@ -20,7 +20,7 @@ from lab_tools import (  # noqa: E402
 )
 
 
-def main(argv=None) -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     data = _AUTOMATION_DIR / "data"
     ap.add_argument("--inventory", type=Path, default=data / "inventory.yaml")
@@ -29,7 +29,7 @@ def main(argv=None) -> int:
     ap.add_argument("--only", default="", help="Comma-separated hosts (default: all)")
     ap.add_argument("--dry-run", action="store_true", help="Print plan only")
     ap.add_argument("--continue-on-error", action="store_true")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     if not args.inventory.is_file():
         print(f"Missing {args.inventory}", file=sys.stderr)
@@ -91,5 +91,15 @@ def main(argv=None) -> int:
 
 
 if __name__ == "__main__":
-    # Pass in dry run to print the plan without actually pushing
-    raise SystemExit(main(["--dry-run"]))
+    raise SystemExit(main())
+    # # Debug (no args): same as
+    # #   uv run python scripts/push.py --inventory data/inventory.containerlab.yaml \
+    # #     --topology data/topology.containerlab.yaml
+    # # With args: normal CLI, e.g. uv run python scripts/push.py --dry-run
+    # _debug = [
+    #     "--inventory",
+    #     str(_AUTOMATION_DIR / "data" / "inventory.containerlab.yaml"),
+    #     "--topology",
+    #     str(_AUTOMATION_DIR / "data" / "topology.containerlab.yaml"),
+    # ]
+    # raise SystemExit(main(_debug))

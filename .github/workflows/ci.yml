@@ -80,6 +80,7 @@ jobs:
       - name: Run containerlab twin pipeline
         env:
           LAB10_SSH_PASSWORD: admin
+          LAB10_SSH_PASSWORD_CLAB: admin
         run: uv run python scripts/clab_twin.py --ssh-timeout 300
 
       - name: Tmate debug session
