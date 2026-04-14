@@ -41,17 +41,22 @@ def device_context(hostname: str, topo: dict) -> dict:
         }
 
     fabric = []
+    fabric_ospf_names: list[str] = []
     for intf in dev.get("interfaces") or []:
         ip, mask = ios_ipv4_with_mask(intf["cidr"])
         on = intf.get("ospf_network", "point-to-point")
+        use_ospf = bool(intf.get("ospf", True))
         fabric.append(
             {
                 "name": intf["name"],
                 "ip": ip,
                 "mask": mask,
                 "ospf_network": on.replace("_", "-"),
+                "ospf": use_ospf,
             }
         )
+        if use_ospf:
+            fabric_ospf_names.append(intf["name"])
 
     s = g.get("snmp") or {}
     snmp = {
@@ -71,7 +76,7 @@ def device_context(hostname: str, topo: dict) -> dict:
         },
         "management": management,
         "fabric_interfaces": fabric,
-        "fabric_interface_names": [f["name"] for f in fabric],
+        "fabric_interface_names": fabric_ospf_names,
         "ospf": {"process_id": g["ospf_process_id"], "area": g["ospf_area"]},
         "snmp": snmp,
     }

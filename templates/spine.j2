@@ -18,11 +18,17 @@ interface {{ management.interface }}
 {% endif %}
 {% for intf in fabric_interfaces %}
 interface {{ intf.name }}
+{% if intf.ospf %}
  description Fabric (OSPF P2P)
+{% else %}
+ description Stub (no OSPF)
+{% endif %}
  ip address {{ intf.ip }} {{ intf.mask }}
  no shutdown
+{% if intf.ospf %}
  ip ospf {{ ospf.process_id }} area {{ ospf.area }}
  ip ospf network {{ intf.ospf_network }}
+{% endif %}
 !
 {% endfor %}
 router ospf {{ ospf.process_id }}

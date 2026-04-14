@@ -1,5 +1,6 @@
 # Spine–leaf lab: IOU L3 only — routed mgmt on a dedicated Ethernet (no VLANs/SVIs).
 # Leaves: fabric e0/0–3; lab mgmt on Ethernet1/0 (add NIC/slot in GNS3 if your image has only slot 0).
+# Set ospf: false on an interface for end hosts (VPCs) — no adjacency; verify.py neighbor count skips them.
 # Spines/gateways: fabric e0/0–1; lab mgmt on Ethernet1/0 below. Adjust names to match show ip int brief.
 #
 # Containerlab: render/push with data/topology.containerlab.yaml (mgmt Ethernet0/0,
@@ -32,6 +33,9 @@ devices:
         cidr: 10.0.101.0/31
       - name: Ethernet0/3
         cidr: 10.0.102.0/31
+      - name: Ethernet1/1
+        cidr: 10.0.103.1/30
+        ospf: false
 
   leaf2:
     role: leaf
@@ -49,6 +53,9 @@ devices:
         cidr: 10.0.201.0/31
       - name: Ethernet0/3
         cidr: 10.0.202.0/31
+      - name: Ethernet1/1
+        cidr: 10.0.203.1/30
+        ospf: false
 
   spine1:
     role: spine

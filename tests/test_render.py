@@ -23,6 +23,8 @@ def test_topology_yaml_loads() -> None:
     assert len(topo["devices"]) == 6
     roles = {d["role"] for d in topo["devices"].values()}
     assert roles == {"leaf", "spine", "gateway"}
+    # Five L3 interfaces; VPC link has ospf: false (no FULL neighbor expected)
+    assert len(topo["devices"]["leaf1"]["interfaces"]) == 5
     assert expected_ospf_neighbors(topo["devices"]["leaf1"]) == 4
     assert expected_ospf_neighbors(topo["devices"]["spine1"]) == 2
     assert expected_ospf_neighbors(topo["devices"]["gw1"]) == 2
@@ -32,6 +34,7 @@ def test_topology_containerlab_overlay_loads() -> None:
     topo = load_topology(TOPOLOGY_CLAB)
     assert topo["global"]["containerlab_render"]["skip_management_interface"] is True
     assert topo["devices"]["leaf1"]["interfaces"][0]["name"] == "Ethernet0/1"
+    assert expected_ospf_neighbors(topo["devices"]["leaf1"]) == 4
 
 
 def test_render_all_produces_non_empty_configs() -> None:
@@ -51,6 +54,7 @@ def test_render_all_produces_non_empty_configs() -> None:
         assert "ip ospf" in cfg
         assert "snmp-server community public RO" in cfg
         assert "snmp-server host 192.168.99.1 public" in cfg
+    assert "End host / stub (no OSPF)" in out["leaf1"]
 
 
 def test_render_containerlab_skips_mgmt_and_offsets_fabric() -> None:

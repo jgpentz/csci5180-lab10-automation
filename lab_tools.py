@@ -34,7 +34,12 @@ def router_id(topo: dict[str, Any], hostname: str) -> str:
 
 
 def expected_ospf_neighbors(device: dict[str, Any]) -> int:
-    return len(device.get("interfaces") or [])
+    """Count interfaces that should form OSPF adjacencies (excludes host/PC links)."""
+    n = 0
+    for intf in device.get("interfaces") or []:
+        if intf.get("ospf", True):
+            n += 1
+    return n
 
 
 def netmiko_connect_kwargs(inv: dict[str, Any], hostname: str) -> dict[str, Any]:
